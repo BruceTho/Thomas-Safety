@@ -1,1 +1,359 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Track Side Incentive</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky header with TSI mark, four tabs (Track, Furlong entry, Setup, Instructions); a lane-per-horse track board is the home view. */
+:root{
+  --bg:#f3f5f2; --surface:#ffffff; --ink:#14181a; --muted:#5a645e; --line:#d8ded9;
+  --accent:#1d6b4b; --accent-ink:#ffffff; --gold:#a97b0a; --bad:#b3261e; --good:#1d7a46;
+  --wash:#e8eee9; --logo-filter:none;
+  --t1:#d64545; --t2:#3b6fd4; --t3:#d9a21b; --t4:#2e9e6b; --t5:#8e5bd0;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif; --body:"Barlow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1412; --surface:#171e1b; --ink:#eef2ee; --muted:#9aa8a0; --line:#2a3530;
+  --accent:#4cc38a; --accent-ink:#08140e; --gold:#e0b84a; --bad:#ff8a80; --good:#5fd39a;
+  --wash:#1f2924; --logo-filter:invert(1); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1412; --surface:#171e1b; --ink:#eef2ee; --muted:#9aa8a0; --line:#2a3530;
+  --accent:#4cc38a; --accent-ink:#08140e; --gold:#e0b84a; --bad:#ff8a80; --good:#5fd39a;
+  --wash:#1f2924; --logo-filter:invert(1); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:1180px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.02em;margin:0;text-wrap:balance}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.bar{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand img{width:38px;height:auto;filter:var(--logo-filter)}
+.brand h1{font-size:26px;line-height:1;text-transform:uppercase}
+.brand small{display:block;color:var(--muted);font-family:var(--display);font-weight:600;font-size:20px;line-height:1.1;letter-spacing:.06em;text-transform:uppercase}
+nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+nav button{background:none;border:1px solid transparent;border-radius:6px;padding:7px 12px;font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+nav button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+nav button:hover{border-color:var(--line)}
+main{padding-top:22px;display:grid;gap:20px}
+.status{font-size:12px;color:var(--muted);display:flex;gap:10px;align-items:center}
+.notice{background:var(--wash);border:1px solid var(--line);border-radius:8px;padding:10px 14px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.btn{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 14px;font-weight:600}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.danger{color:var(--bad)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;min-width:0}
+.panel h2{font-size:24px;text-transform:uppercase;margin-bottom:10px}
+.muted{color:var(--muted)}
+.tabular{font-variant-numeric:tabular-nums}
 
+/* Track */
+.circle{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.medal{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--surface);min-width:0}
+.medal b{display:block;font-family:var(--display);font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.medal span{font-family:var(--display);font-size:28px;font-weight:700;overflow-wrap:anywhere}
+.medal.first{border-color:var(--gold)} .medal.first b{color:var(--gold)}
+.cotitle{font-size:clamp(34px,6vw,60px);line-height:1;text-transform:uppercase;letter-spacing:.03em;margin:4px 0 -4px}.wchead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px 16px;flex-wrap:wrap;margin-bottom:10px}.wchead h2{margin:0}.client{margin-left:auto;text-align:right;font-family:var(--display);font-weight:700;font-size:28px;line-height:1.1;text-transform:uppercase;letter-spacing:.03em;overflow-wrap:anywhere;min-width:0}.client.empty{font-family:var(--body);font-weight:400;font-size:13px;text-transform:none;letter-spacing:0;color:var(--muted)}.wc{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.official{background:var(--gold);color:var(--bg);font-size:18px;letter-spacing:.08em;padding:3px 14px;border-radius:99px;box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 30%,transparent)}.panel:has(.official){border-color:var(--gold)}.scroll{overflow-x:auto}
+table.track{border-collapse:separate;border-spacing:0;width:100%;min-width:900px}
+.track th{font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center;padding:6px 2px;border-bottom:2px solid var(--ink)}
+.track th.l,.track td.l{text-align:left;padding-left:8px}
+.track td{padding:0;border-bottom:1px solid var(--line);height:54px;text-align:center}
+.track td.horse{min-width:170px;max-width:230px}
+.horse .nm{font-family:var(--display);font-size:21px;font-weight:700;line-height:1.1;display:flex;align-items:center;gap:8px}
+.horse .nm i{width:12px;height:12px;border-radius:50%;flex:none}
+.horse .msg{font-size:12px;color:var(--muted);padding-left:20px;white-space:nowrap}
+.cell{display:grid;place-items:center;height:40px;margin:0 2px;border-radius:5px;font-family:var(--display);font-weight:700;font-size:16px;border:1px dashed var(--line);color:var(--muted)}
+.cell.won{border:1px solid var(--line);background:var(--surface)}.cell{min-width:38px}.cell svg{width:28px;height:28px}
+.cell.lost{border:1px solid var(--bad);color:var(--bad)}
+.cell.off{opacity:.35}
+.cum{font-family:var(--display);font-size:26px;font-weight:700;width:96px}.track th{line-height:1.05}.tot{font-family:var(--display);font-size:30px;font-weight:700;width:70px}
+.place{font-family:var(--display);font-size:16px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;width:84px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px}
+.legend .cell{display:inline-grid;width:26px;height:22px;margin:0 6px 0 0;font-size:12px;vertical-align:middle}.legend .cell svg{width:16px;height:16px}
+
+/* Furlong entry */
+.weeks{display:flex;gap:6px;flex-wrap:wrap}
+.weeks button{min-width:46px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-family:var(--display);font-size:18px;font-weight:600}
+.weeks button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.weeks button.done{border-color:var(--good);box-shadow:inset 0 -3px 0 var(--good)}
+.weeks button.off{opacity:.45}
+.fhead{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.fhead label{display:flex;gap:8px;align-items:center;font-weight:600}
+.fhead select{padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-weight:600}
+.teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.team{border:1px solid var(--line);border-radius:10px;background:var(--surface);min-width:0;overflow:hidden}
+.team>header{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:3px solid var(--c)}
+.team h3{font-size:22px;text-transform:uppercase;line-height:1.1}
+.team h3 small{display:block;font-family:var(--body);font-size:11px;font-weight:500;letter-spacing:.08em;color:var(--muted)}
+.badge{font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:3px 10px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.badge.won{background:var(--good);color:var(--bg);border-color:var(--good)}
+.badge.lost{border-color:var(--bad);color:var(--bad)}
+table.roster{width:100%;border-collapse:collapse;table-layout:fixed}
+.roster th{font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:6px 8px}
+.roster td{padding:3px 4px;border-top:1px solid var(--line)}
+.roster td.role{padding-left:6px;padding-right:0}.roster td.role select{font-size:10px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);padding:6px 2px}
+.roster select{width:100%;min-width:0;padding:6px;border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+.roster select.dup{background:var(--bad);color:#fff;border-color:var(--bad)}
+.roster select.inh{color:var(--muted)}
+.roster input[type=number]{width:46px;padding:6px 4px;border:1px solid var(--line);border-radius:5px;background:var(--surface);text-align:center}
+.roster tfoot td{border-top:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:18px;text-align:center;padding:6px}
+.roster tfoot td:first-child{text-align:right;letter-spacing:.06em;text-transform:uppercase}
+.hint{font-size:13px;color:var(--muted)}
+
+/* Setup */
+.two{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:20px}
+@media(max-width:820px){.two{grid-template-columns:minmax(0,1fr)}}
+.emps{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 12px}
+.emps input{font-weight:700;font-size:16px}.emps input[aria-invalid="true"]{border-color:var(--bad);outline:1px solid var(--bad)}.emps label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.emps label span{width:22px;text-align:right}
+.emps input,.horses input,.field input{width:100%;min-width:0;padding:6px 8px;border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+.horses{display:grid;gap:10px}
+.horses label{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:center;font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.horses i{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px}
+.field{display:grid;gap:4px;margin-bottom:12px}
+.field span{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+textarea{width:100%;min-height:90px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* Instructions */
+.doc{max-width:760px}
+.doc h2{margin-top:22px}.doc h2:first-child{margin-top:0}
+.doc p,.doc li{max-width:68ch}
+.doc li{margin-bottom:6px}
+@media(max-width:520px){.brand h1{font-size:22px}nav{margin-left:0;width:100%}nav button{flex:1;padding:7px 4px;font-size:15px}.teams{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:no-preference){.cell{transition:background .2s}}
+</style>
+
+<header class="top"><div class="bar">
+  <div class="brand"><img alt="Thomas Safety Institute" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPQAAADgCAYAAAA0aEtzAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAIdUAACHVAQSctJ0AAA/gSURBVHhe7Z1rrFTVGYa/cgnITeBH8YcRuQnUFKFQicZAA4WmmGpSMZqYysULFU1q26htBI4gf4yXKmhFjJhATSCkBWmxBihtI7aptQZNjKZQUe6FohhRuZ2zm3eYg3PW/s7MXmv2fb1P8kAOM3vtdfnecM6cNWtEiA+0VCWEFJxVIhJUfdF8kBBSDLqKyNqaMLeLf8NjhJCC8DUR+YsS5nbxGJ5DCCkAJ5UQm+I5hJAcc6GI7FfC25kHqtcQQnLGBSJyUAltI3ENriWE5ITeInJaCWtUcS3aIIRkzISIPzM38lS1LUJIRkwTkbNKOF1FW9PNmxBCkucmJZBxebN5M0JIcsxXQhi3uAchJGEeUsKXlIvNmxNC4uNlJXRJu8nsBCGkObqJyFYlbGm5rdoHQkgM/EMJWdq+YXaKEGKPzVbOpEVfCCEO9MlZmNtFn9A3QkhEvi4ix5Qw5UX0DX0khDRgZHUbphmivIk+jjI7Twj5iiuV4OTdieYgCCEi31fCUhTRd0JIldtEpE0JSlFE3zEGQrznZ0pAiirGQoi3PKeEouiuNAdJiA+8ooShLGJshHgBjs/9kxKCsrmdRwUTH9ipFH9ZxVgZalJKeonIf5SiL7sfVMdOSGnoLyInlGL3RYx9gDkphBSR4UqB+yrmgpDCckVMR+yWRcwF5oSQwnGZUtD0nJgbQgrDD5Uiph29wZw0QvLI/SLSqhQw7Sjm6AFz8gjJEw8rhUvrizkjJHe8oBQrjeYqczIJyZKNSpFSO3HmOCGZgm2NbyvFSd3EXHKrKMmEfiKyRylK2pwfVueWkNTANsbDSjHSeMTccqsoSYWuSgHSZMRcE5IY2It8Rik8moyYa+7/JokwXkQ+V4qOJivmHHNPSGyMUwqNpivWgJCmuaPgR+yWRawB1oIQZx5UCotmK9aEEGt+rRQTzYfPmotFSGd0EZHVShHRfLmmulaEdAq2HW5RiofmU6wVt4qSTvH5IL+iijUjpAPYO3xAKRZaDLF2F5qLSvwEZ0bvV4qEFkusIc//9pzuInJKKQ5aTLGWWFPiIWNE5EulKGix5VHBHjKFb7IotVhbrDHxAB6x649Ya1Ji7lQWnZbbeWYRkHKwQFls6odYe1Ii1imLTP0SNUAKTjcR2awsLvXTV6o1QQrK35RFpX6LmiAFZJ+ymJRC7CojBQHb//Yqi0hpraiR3mbxkHwxUESOKItHqSZqBTVDcsiw6rY/c9EorSdqhkcF5wwc82ouFKU2TjCLimTDd5XFodRF1BLJkB8pi0JpM95qFhlJh/nKYlAah3ebxUaS5SllESiNU9QYSYE/KJNPaRKi1khC8IhdmoU8Kjgh/qlMNqVp+KZZjMSdniLyb2WSKU3TXdVaJE2A87KPK5NLaRaiFlGTxIEhyoRSmgdRm8SCb3JfNs2xqE3UKInAZcoEUppHUaukDjOUSaM0z15rFjE5x09EpFWZMErzLGr2XrOYfWeRMlGUFknUMBGRFcrkUFpEnzOL2zd+q0wKpUUWNe0l3MpJyypq2xtw0iK20ZmTQGmZ3O3DqaL9ReSAMnhKy+jBas2XErwFzRwwpT5YurdfDhWRs8pAKfVB1D4yUAqw5/WEMkhKfRIZGGOGo2h8Q0TalMHRlJw8eXKwfPnyoLW1tYNtbW0dvm5paQkuvvji0PU0VpEFZKKQzFYGVApXr14dZMGAAQNCfTHt169fsGjRomDfvn3m5ZH55JNPgoULFwY9evQItR9FF0aNGhVqp8TOMcOSdx5QBlEa8xjorl27Bs8880xw8uRJ87KmWLFiRehejXTBs0BDZKQQ/ErpfKnMW6DHjh0bnDlzxnx6bJw6dcrq23EXPAw0fNIMT57AS/MvKJ0unXkK9OzZs82nJcaQIUNC99d0wdNAw1V5/LUWOuTNedl5CfSkSZPMpyTK6dOngzFjxoTmw9QFjwMNkZ0uZqiy5KjSydKal0BnwdmzZ4P+/fuH5qTZfnkeaIgMZU5fEdmvdK7U5iHQ7733nvlwamzdujU0J7W6wEBXxLbozE4V7SUi+5ROld6sAz1+/HjzodQZNmxYaF7adYGBPi8ylcmbOrw9lTPrQG/ZssV8KBI7duwIHnnkkeC6666r/I2vXTl+/HhoXtp1gYHuILKVGqNF5AulE974+OOPB3v27KmrLdjMYbZhik0j3bt3Ny9tyIkTJ+q+Qn3jjTcGBw8eNC/rlM8++yzYtm1bqJ12XWCgQ35ZzVqiTBKRU8rNqaEtU6ZMCbWhOWjQIPPShqxduzbUjmnv3r2D3bt3m5eeZ+/evcGjjz4aXH311aFrTV1goFWRtclmCOPiB8oNaSfaEjXQ+NnVljVr1oTa0USoatm5c2cwY8aMoE+fPqHn1tMFBrquyF6s3KbchNbRlqiBxu+BbTl27Fjl23WzLc0NGzYE48aNC/27jS4w0A293QylK6Xel52UtiQZ6HbWrVsXXHPNNaE249YFBjqSTe//Xq00SiNoS9RADx8+3LzUGuz4wotwr732WnD99deH7tGsLjDQkV1jhjQKXUVkg9IYjagtUQN9ySWXmJfGxsaNGyv9wAtv5n1tdIGBtnJjNaOR2aE0Qi20JWqg4ccff2xeHjsfffRRsGzZskivapu6wEBbi4xGYq9yMbXUFptAL1261Lw8Ufbv3x9cdNFFoX50pgsMtJPYVdYpF4jIh8pF1EFbbAIN8XNw2jz22GOhfmi6wEA7i8wiux3AhvBDypOpo7bYBnrevHlmE6nw/vvvBz179gz1p1YXGOimRHbPv6ljsO9bOZPQFttAQ2wYyYLNmzeH+lKrCwx002KrKLJc+QNfmE+gTWiLS6DhSy+9ZDaVCvV+3eUCA9205wPNb7kT0BbXQMP77rvPbC5xcIaZ2Y92XWCgm/Kw9j5qvigWo7Y0E2jYpUuX4JZbbjGbTZS77ror1A/oAgPtrPqiWC1eHloQt7Y0G+har7rqqsq7o3BaZ5IcOnQodG/oAgPtJE4LigQ3ljSpLXEGutZp06ZVNogkdWSR9oq3Cwy0tZE3lgBsK8P2MrMRGlFbkgp0rX379q1sHZ05c2awcuVKswtOjBw5MnQfFxhoK1+23frZDjaCm43RCNoSR6Dx6Rk4pmjw4MHBxIkTQ4935rvvvmt2JzLa1lAXGOjI/sYMqS2/UBqlDbTFJdB4K+ScOXOCp59+Oti1a1eH9j799FP12+HOnDt3bofro8JAp+ovzXC6gjdXm43TOtrSKNATJkyo/Cz8zjvvBIcPHzYvV5k/f36onc7E/+4uXH755aG2XGCgG3qHGcpm4RFEFtrSKNCub5ustwGkVvzay4URI0aE2nKBga5r7EcQtYMDy3hIYARtaRRo6Pq2yeeffz4YOHBgqL1alyxZYl7WkCNHjoTagS4w0KrI2nfMEMYNPrCae78baEuUQG/atMm8zIq33nor2L59e/DEE08Es2bNqvyNNo8ePWo+NRLr168P9dFl7ICBDomtnKl+ODz/p66jLVEC7dJukuBEULN/rn1koDuIbKWOtx+FE0VbogYa2y3zwOuvvx7qm+vYAQN93sw+CgdgQ7h3H1YXRVuiBhqvRuO87Kwx+9XM2AEDXTHTD6ur5X9K57zWlqiBbhe/Z86C1tbWYOzYsaH+1OoCA13JUG7AB75vVjrprbbYBvrSSy81m0gcfDb09OnTQ30xdcHzQCM7ufrAd4BQr1I666W22AYa9ujRo/LKdVoMHTo01AdNFzwO9IvV7OSWJ5VOe6ctLoFud8GCBWZzsdHW1hYsXrw4dM96uuBpoJ8yw5NXvN//bUszgYbYt/3qq6/G9h5ofGQsPjqn3ge7d6YLHgYaGSkUc5RBeKMtzQa61kmTJlXCbQsOLMCH1eED4Xv16hVqN6oueBbouWZYigJ2urQpA6IpO3r06GDy5MlBS0tLxalTp1a+Np9HExVZSHX3VxKMEZHPlcFR6pPIwBVmOIrKUBE5qwySUh9E7SMDpQK/ZzMHSqkP5u53zHHRX0QOKgOmtIyi1lHzpaaPiOxWBk9pmUSNo9a9ADtj3lQmgdIyiNrO9e6vpPidMhmUFlnUtNesVCaF0iKKWiYiskiZHEqLZItZ1L5zr4i0KhNFaZ5Fzf7ULGZyjmuVCaM0z6JmSR1GKpNGaR5FrZIIYP/3SWUCKc2DqE3UKLFgiDKRlOZB1CZx4EIROa5MKKVZiFpETZIm6Ckiu5TJpTRNUYOoRRIT3CpKs/JfZjGS5sHe2K3KZFOapKg5L/dlpwXP/6ZpiVojKbBMmXxK43S5WXQkWe5WFoHSOLzHLDaSDrcqi0FpM84yi4ykyzRlUSh1EbVEcsAEZXEotfHbZlGRbBnG/d/UQdTMcLOYSD4YKCJHlEWjVBO1gpohOaa3iOxVFo/SWlEjqBVSEPYri0gpRG2QAvJ3ZTGp36ImSEHpJiKvKItK/RS1gJogBWe9srjUL1EDpEQsVBaZ+iHWnpSQecpi03L7Y7MISLm4QVl0Wk6x1sQDporIGaUAaDnE2mKNiUdcISJfKsVAiy22co41F5v4QXcROa0UBS2mWEusKfGYXiJyQCkOWiyxhtzKSSrgrGWGurhi7XheNgnxuVIsNN9izQhR4VHBxZJH7JKGdBGRNUrx0HyJNcJaERKJZ5UiovlwhblYhEThQaWYaLZiTQhx5k4RaVMKi6Yr1gBrQUjTfEspMJquWANCYmO8iHyhFBpNVsw55p6Q2MFxr3xTR3pirkeYi0BInHRVCo8mI+aakMQZICKHlQKk8fjf6hwTkhr9RGSPUoy0OT+szi0hqYNth28rRUndxFxyKyfJnJeV4qR2bjInlZAsWaUUKY0m5o6Q3LFUKVZaX8wZIbnlfhFpVQqXdhRz9IA5eYTkER4V3NiZ5qQRkmdGKkVMz4m5IaRw4DhZHCtrFrSv8ohdUniw/9ssbF/lvmxSCvqLyAmlwH0RY+dWTlIqcGb0B0qxl12Mmedlk9KyUyn6soqxcisnKTUo8O1K8ZfNPzPMxCf+qISgLGJshHjH80oYii7GRIi3/FwJRVHFWAjxntsKflQw+n67OShCfGaGEpSiiL4TQgyuVMKSdyeagyCEfAXeuHBKCU7eRB9HmZ0nhIQZJCLHlBDlRfQNfSSERKSviOxXwpS16BP6Rghx4IASqqxEXwghTfKGEq60RR8IITHQTUS2KSFLS9wbfSCExAjOrjbDlrS/NztBCImPJUrokvJh8+aEkPi5Wwlf3N5j3pQQkhw3KSGMy5vNmxFCkmd6zIf6o63vmTchhKTHhJiOCsZWTrRFCMkYHMJ3RglpVHEtD/IjJEdcICIHlbA28lD1WkJIzsD53zb7v7GVE9cQQnLMaSW8pngOIaQA4PjcvyohbheP8YhdQgpEVxFZq4QZ/4bHCCEFZFVNmF80HySEFI+HqpKS838I4SxoDYBs1wAAAABJRU5ErkJggg=="><div><h1>Track Side Incentive</h1><small id="company">Thomas Safety Institute, LLC</small></div></div>
+  <nav role="tablist" aria-label="Sections" id="nav"></nav>
+</div></header>
+<div class="wrap"><main id="main"></main></div>
+
+<script>
+(function(){
+"use strict";
+const NF=15, NT=5, NS=10, NE=50;
+const COLORS=["var(--t1)","var(--t2)","var(--t3)","var(--t4)","var(--t5)"];
+const ROLES=["Owner","Jockey","Trainer"];
+const GOOD=["And They are Off","Strong Start","Off and Running","See You at the Finish Line"];
+const BAD=["Stuck at Gate","Hung up at Gate","Got Bumped","Bumped into Rail"];
+const TABS=[["track","Track"],["furlong","Furlong"],["setup","Setup"],["help","Instructions"]];
+
+const blankSlot=()=>({n:null,r:null,i:0,c:0});
+function blankState(){
+  const f=[];for(let w=0;w<NF;w++){const teams=[];for(let t=0;t<NT;t++){const s=[];for(let k=0;k<NS;k++)s.push(blankSlot());teams.push(s)}f.push({done:false,teams})}
+  return {company:"Thomas Safety Institute, LLC",emps:Array(NE).fill(""),horses:["Team 1","Team 2","Team 3","Team 4","Team 5"],len:15,f,sample:false};
+}
+function sampleState(){
+  const s=blankState();
+  const names=["Ann","Bill","Brian","Carol","Cheryl","Chuck","Cindy","Dan","Dan D","Darrell","Rich","Mary","Fred","Owen","Susan","John","Phillip","Josh","Gary","Paula"];
+  names.forEach((n,i)=>s.emps[i]=n);
+  s.horses=["Safety First","Clean Sweep","Steady Hands","Eagle Eye","Lucky Lanyard"];
+  for(let t=0;t<NT;t++)for(let k=0;k<4;k++)s.f[0].teams[t][k].n=names[t*4+k];
+  s.len=8;
+  const marks=[[[1,1,"i"],[2,2,"c"],[4,0,"c"]],[[1,0,"i"],[4,3,"c"]],[[1,2,"c"],[2,0,"i"],[3,1,"c"],[4,2,"i"]]];
+  marks.forEach((ms,w)=>{s.f[w].done=true;ms.forEach(([t,k,type])=>{s.f[w].teams[t][k][type]=1})});
+  s.client="Example Freight Co.";s.sample=true;return s;
+}
+let S=blankState(), tab="track", wk=0, dbDoc=null, loaded=false, saveMsg="", timer=null, confirmReset=false;
+try{const h=location.hash.slice(1);if(TABS.some(t=>t[0]===h))tab=h}catch(e){}
+
+/* ---------- logic (mirrors the workbook formulas) ---------- */
+function effName(w,t,k){for(let i=w;i>=0;i--){const v=S.f[i].teams[t][k].n;if(v!==null&&v!==undefined)return v}return ""}
+function effRole(w,t,k){for(let i=w;i>=0;i--){const v=S.f[i].teams[t][k].r;if(v!==null&&v!==undefined)return v}return ROLES[k]||""}
+function total(w,t){return S.f[w].teams[t].reduce((a,x)=>a+(+x.i||0)+(+x.c||0),0)}
+function won(w,t){return S.f[w].done&&total(w,t)===0?1:0}
+function wins(t){let a=0;for(let w=0;w<NF;w++)a+=won(w,t);return a}
+function cum(t){let a=0;for(let w=0;w<NF;w++)if(S.f[w].done)a+=total(w,t);return a}
+function ranks(){if(!S.f.some(x=>x.done))return [0,0,0,0,0];const cs=[0,1,2,3,4].map(cum);return cs.map(x=>1+cs.filter(y=>y<x).length)}
+function msg(w,t){if(w>=4||!S.f[w].done)return "";const tt=total(w,t),j=w%4;return tt===0?GOOD[j]:BAD[j]}
+function horseName(t){return S.horses[t]||("Team "+(t+1))}
+function usedElsewhere(w){const m={};for(let t=0;t<NT;t++)for(let k=0;k<NS;k++){const n=effName(w,t,k);if(n)m[n]=(m[n]||0)+1}return m}
+
+/* ---------- persistence ---------- */
+function setStatus(m){saveMsg=m;const e=document.getElementById("save");if(e)e.textContent=m}
+function changed(){
+  S.sample=false;
+  try{localStorage.setItem("tsi-race",JSON.stringify(S))}catch(e){}
+  if(!dbDoc){setStatus("Saved in this browser");return}
+  setStatus("Saving…");clearTimeout(timer);
+  timer=setTimeout(()=>{dbDoc.set({json:JSON.stringify(S)}).then(()=>setStatus("Saved"),()=>setStatus("Could not save to the shared store; kept in this browser"))},600);
+}
+function adopt(raw){try{const d=JSON.parse(raw);if(d&&d.f&&d.f.length===NF){S=d;return true}}catch(e){}return false}
+async function boot(){
+  render();
+  let got=false;
+  try{
+    const db=await Promise.race([window.claude.use("db"),new Promise(r=>setTimeout(()=>r(null),10000))]);
+    if(db){dbDoc=db.doc("race/state");const snap=await dbDoc.get();if(snap.exists&&snap.data().json)got=adopt(snap.data().json)}
+  }catch(e){dbDoc=dbDoc||null}
+  if(!got){try{const r=localStorage.getItem("tsi-race");if(r)got=adopt(r)}catch(e){}}
+  if(!got)S=sampleState();
+  loaded=true;setStatus(got?(dbDoc?"Saved":"Saved in this browser"):"Example data");render();
+}
+
+/* ---------- views ---------- */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function nav(){
+  $("nav").innerHTML=TABS.map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${tab===k}">${l}</button>`).join("");
+  
+}
+function render(){
+  nav();
+  const m=$("main");
+  const banner=S.sample&&loaded?`<div class="notice"><span><b>Example race.</b> Names and results below are sample data. Clear them to start your own race.</span><button class="btn primary" data-act="fresh">Start my own race</button></div>`:"";
+  const body={track:viewTrack,furlong:viewFurlong,setup:viewSetup,help:viewHelp}[tab]();
+  m.innerHTML=banner+body+`<div class="status"><span id="save">${esc(saveMsg)}</span></div>`;
+  if(tab==="furlong")updateTotals();
+}
+function viewTrack(){
+  const r=ranks(), len=S.len;const official=S.f.slice(0,len).every(x=>x.done);
+  const groups=[[1,"Win · 1st"],[2,"Place · 2nd"],[3,"Show · 3rd"]].map(([n,l])=>{
+    const nm=[0,1,2,3,4].filter(t=>r[t]===n).map(horseName);
+    return `<div class="medal ${n===1?"first":""}"><b>${l}</b><span>${nm.length?esc(nm.join(" / ")):"<span class='muted'>—</span>"}</span></div>`}).join("");
+  let rows="";
+  const order=[0,1,2,3,4];
+  for(const t of order){
+    let cells="";
+    for(let w=0;w<NF;w++){
+      const off=w>=len?" off":"";
+      if(!S.f[w].done)cells+=`<td><div class="cell${off}" title="Furlong ${w+1}: not complete">·</div></td>`;
+      else if(won(w,t))cells+=`<td><div class="cell won${off}" style="color:${COLORS[t]}" title="Furlong ${w+1}: ${esc(msg(w,t)||"won")}"><svg style="transform:scaleX(-1)" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M21 22H7c.2-3.2 1.4-5.2 3-7.2-1.7.1-3.6-.4-5-1.8L2.5 11.5 3 9.7 8 4.6 8.4 2l2.4 1.5C16 3.6 20.5 8 21 14.5V22zM14.2 8.2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg></div></td>`;
+      else cells+=`<td><div class="cell lost${off}" title="Furlong ${w+1}: ${esc(msg(w,t)?msg(w,t)+" ":"")}(${total(w,t)})">${total(w,t)}</div></td>`;
+    }
+    let last="";for(let w=3;w>=0;w--)if(S.f[w].done){last=msg(w,t);break}
+    const pl=r[t]?["","1st","2nd","3rd"][r[t]]||r[t]+"th":"";
+    rows+=`<tr><td class="horse l"><div class="nm"><i style="background:${COLORS[t]}"></i>${esc(horseName(t))}</div><div class="msg">${esc(last||"In the gate")}</div></td>${cells}<td class="tot tabular">${wins(t)}</td><td class="cum tabular">${cum(t)}</td><td class="place">${pl}</td></tr>`;
+  }
+  const heads=Array.from({length:NF},(_,w)=>`<th>${w+1}</th>`).join("");
+  return `<section class="panel"><div class="wchead"><h2 class="wc">Winners circle${official?'<span class="official">Official Results</span>':""}</h2><div class="client${S.client?"":" empty"}">${S.client?esc(S.client):"Add the company name on Setup"}</div></div><div class="circle">${groups}</div></section>
+  <section class="panel"><h2>The track</h2>
+  <div class="scroll"><table class="track"><thead><tr><th class="l">Horse</th>${heads}<th>Won</th><th title="Running total of incidents and unexcused absences">Incidents + absences</th><th>Place</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <div class="legend"><span><span class="cell won" style="color:var(--accent)"><svg style="transform:scaleX(-1)" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M21 22H7c.2-3.2 1.4-5.2 3-7.2-1.7.1-3.6-.4-5-1.8L2.5 11.5 3 9.7 8 4.6 8.4 2l2.4 1.5C16 3.6 20.5 8 21 14.5V22zM14.2 8.2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg></span>Furlong won, shown in the horse's color (no incidents or unexcused absences)</span><span><span class="cell lost">2</span>Number of incidents + unexcused absences that week</span><span><span class="cell">·</span>Furlong not complete</span><span>Race length: ${len} furlongs</span></div></section>`;
+}
+function teamHTML(t){
+  const w=wk, f=S.f[w], used=usedElsewhere(w);
+  let rows="";
+  for(let k=0;k<NS;k++){
+    const own=f.teams[t][k].n, cur=effName(w,t,k), inh=own===null&&w>0;
+    const dup=cur&&used[cur]>1;
+    const opts=S.emps.filter(e=>e&&(e===cur||!used[e])).map(e=>`<option value="${esc(e)}"${e===cur&&!(inh&&w>0)?" selected":""}>${esc(e)}</option>`).join("");
+    const first=w>0?`<option value="__inh"${inh?" selected":""}>${cur?esc(cur):"—"}</option>`:"";
+    const blank=`<option value=""${own===""?" selected":""}>${w>0?"— removed —":""}</option>`;
+    const sl=f.teams[t][k];
+    rows+=`<tr><td class="role"><select data-role="${t},${k}" aria-label="Role, line ${k+1}, team ${t+1}"><option value=""></option>${ROLES.map(r=>`<option${effRole(w,t,k)===r?" selected":""}>${r}</option>`).join("")}</select></td><td><select data-sel="${t},${k}" class="${dup?"dup":""} ${inh?"inh":""}" aria-label="${effRole(w,t,k)||"Player "+(k+1)}, team ${t+1}" title="${dup?"This name is already used this furlong":inh?"Carried over from the previous furlong":""}">${first}${blank}${opts}</select></td>
+    <td><input type="number" min="0" max="10" step="1" inputmode="numeric" data-num="${t},${k},i" value="${sl.i||""}" aria-label="Incidents"></td>
+    <td><input type="number" min="0" max="10" step="1" inputmode="numeric" data-num="${t},${k},c" value="${sl.c||""}" aria-label="Unexcused absences"></td></tr>`;
+  }
+  return `<article class="team" style="--c:${COLORS[t]}"><header><h3><small>Team ${t+1}</small>${esc(horseName(t))}</h3><span class="badge" id="b${t}"></span></header>
+  <table class="roster"><colgroup><col style="width:88px"><col><col style="width:62px"><col style="width:82px"></colgroup><thead><tr><th></th><th>Employee</th><th>Incident</th><th>Unexcused absence</th></tr></thead><tbody>${rows}</tbody>
+  <tfoot><tr><td colspan="2">Total</td><td colspan="2" id="tt${t}" class="tabular"></td></tr></tfoot></table></article>`;
+}
+function viewFurlong(){
+  const w=wk;
+  const tabs=Array.from({length:NF},(_,i)=>`<button data-wk="${i}" aria-pressed="${i===w}" class="${S.f[i].done?"done":""} ${i>=S.len?"off":""}" aria-label="Furlong ${i+1}">${i+1}</button>`).join("");
+  return `<section class="panel"><div class="weeks" role="group" aria-label="Furlong (week)">${tabs}</div></section>
+  <section class="fhead"><h2 style="font-size:30px;text-transform:uppercase">Furlong ${w+1}</h2>
+  <label>Furlong ${w+1} complete? <select id="done"><option value="no"${S.f[w].done?"":" selected"}>No</option><option value="yes"${S.f[w].done?" selected":""}>Yes</option></select></label></section>
+  <p class="hint" style="margin:-8px 0 0;max-width:80ch">Enter a 1 beside any employee who had an incident or an unexcused absence this week, then set Complete to Yes to post the result to the Track. A team wins the furlong when its total is zero.${w>0?" Names carry over from the last furlong. Change a name here to add, swap or remove someone from this week on.":""}</p>
+  <div class="teams">${[0,1,2,3,4].map(teamHTML).join("")}</div>`;
+}
+function updateTotals(){
+  for(let t=0;t<NT;t++){
+    const b=$("b"+t),tt=$("tt"+t);if(!b)return;
+    tt.textContent=total(wk,t);
+    const done=S.f[wk].done,z=total(wk,t)===0;
+    b.className="badge"+(done?(z?" won":" lost"):"");
+    b.textContent=done?(z?"Furlong won":"Held back"):"Open";
+  }
+}
+function viewSetup(){
+  const emps=S.emps.map((e,i)=>`<label><span>${i+1}</span><input data-emp="${i}" value="${esc(e)}" maxlength="40" aria-label="Employee ${i+1}"></label>`).join("");
+  const horses=S.horses.map((h,i)=>`<label><span><i style="background:${COLORS[i]}"></i>Team ${i+1}</span><input data-horse="${i}" value="${esc(h)}" maxlength="40" aria-label="Horse name, team ${i+1}"></label>`).join("");
+  return `<div class="two"><section class="panel"><h2>Employee list</h2>
+  <p class="hint">Up to 50 names. These fill the drop-downs on every furlong. Renaming someone here updates their name wherever they appear.</p>
+  <p id="empmsg" class="hint" role="alert" style="color:var(--bad);min-height:1.4em;margin:8px 0 0"></p>
+  <div class="emps">${emps}</div>
+  <details style="margin-top:16px"><summary style="cursor:pointer;font-weight:600">Paste a list of names</summary>
+  <div style="margin-top:8px"><textarea id="paste" placeholder="One name per line"></textarea><div class="row" style="margin-top:8px"><button class="btn" data-act="paste">Replace list with pasted names</button></div></div></details></section>
+  <div style="display:grid;gap:20px;align-content:start">
+  <section class="panel"><h2>Horse names</h2><p class="hint">Teams pick their own name. Shown on every furlong and on the Track.</p><div class="horses">${horses}</div></section>
+  <section class="panel"><h2>Race</h2>
+  <label class="field"><span>Company name</span><input id="co" value="${esc(S.client||"")}" maxlength="60" placeholder="Company name" autocomplete="off"></label>
+  <label class="field"><span>Furlongs (weeks) in this race</span><select id="len" style="padding:6px;border:1px solid var(--line);border-radius:5px;background:var(--surface)">${Array.from({length:12},(_,i)=>i+4).map(n=>`<option${n===S.len?" selected":""}>${n}</option>`).join("")}</select></label>
+  <div class="row"><button class="btn" data-act="csv">Export results (CSV)</button>
+  <button class="btn danger" data-act="reset">${confirmReset?"Click again to erase everything":"Reset race"}</button></div></section></div></div>`;
+}
+function viewHelp(){return `<section class="panel doc">
+<h2>Overview</h2>
+<p>Track Side Incentive brings some competitive spirit to your HR and safety departments. Five horses race each other, and each horse is a team of up to 10 employees. The team whose employees go a week without an incident or an unexcused absence wins that furlong. The horse with the most furlongs won crosses the line first.</p>
+<p>Mix departments within each horse to bring them together, or run departments against each other. Name an owner, trainer and jockey on each team: stronger employees the others look up to. Each furlong is one week. Run 4 furlongs or all 15.</p>
+<h2>Set up</h2>
+<ol><li>Open <b>Setup</b> and enter employee names (up to 50).</li><li>Open <b>Furlong</b>, tab 1, and use the drop-downs under each team to place employees. A name already used on another team, or twice on one team, turns red. Pick someone else.</li><li>Assign owner, jockey and trainer using the first three lines of each team.</li><li>Teams choose a horse name. Enter it on <b>Setup</b>. You only enter names once; they carry through every furlong.</li><li>Choose how many furlongs the race lasts.</li></ol>
+<h2>Running the race</h2>
+<ol><li>At the end of the week, open that furlong and enter a 1 under Incident or Unexcused Absence for each employee who had one. Leave the rest blank.</li><li>Set <b>Furlong complete?</b> to Yes. That ends the furlong and posts results to the <b>Track</b>.</li><li>Post the furlong and the Track so everyone can see who held a team back. Nobody wants to be the one.</li><li>Repeat each week. At the end of the race, congratulate the winning horse and team.</li></ol>
+<h2>Awards</h2>
+<p>Pay out Win (1st), Place (2nd) and Show (3rd), or the winner only: gift cards, cash, free lunches. Set the awards at the start so teams race for them, and check tax limits on incentives with accounting.</p>
+<h2>Other rules you can use</h2>
+<ul><li><b>Removing a teammate.</b> If an employee has habitual unexcused absences, the owner may remove them with the agreement of the trainer and jockey, after that employee has cost the team at least two furlongs. A smaller team has fewer chances for an incident, so you may reduce its incentive.</li>
+<li><b>Uneven teams.</b> More employees means more exposure. Consider a higher incentive for larger teams, or a lower one for smaller teams.</li></ul>
+<h2>Changing teams mid-race</h2>
+<p>Each furlong copies its team from the one before. To add, swap or remove an employee starting in a given week, change the name on that week's furlong using the drop-down. Earlier weeks keep their original names, so the history stays accurate.</p>
+</section>`}
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-tab],[data-wk],[data-act]");if(!b)return;
+  if(b.dataset.tab){tab=b.dataset.tab;confirmReset=false;try{history.replaceState(null,"","#"+tab)}catch(x){location.hash=tab}render();window.scrollTo(0,0)}
+  else if(b.dataset.wk!==undefined){wk=+b.dataset.wk;render()}
+  else act(b.dataset.act);
+});
+function act(a){
+  if(a==="fresh"){S=blankState();changed();setStatus(saveMsg);tab="setup";render()}
+  else if(a==="paste"){const seen=new Set(),all=$("paste").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),v=all.filter(x=>{const k=x.toLowerCase();if(seen.has(k))return false;seen.add(k);return true}).slice(0,NE);const dropped=all.length-v.length;S.emps=Array.from({length:NE},(_,i)=>v[i]||"");changed();render();if(dropped>0)empMsg(dropped+" repeated or extra name"+(dropped>1?"s were":" was")+" left out.")}
+  else if(a==="reset"){if(!confirmReset){confirmReset=true;render();return}confirmReset=false;S=blankState();changed();render()}
+  else if(a==="csv")exportCsv();
+}
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.num){
+    const [tm,k,f]=t.dataset.num.split(",");let v=parseInt(t.value,10);if(isNaN(v)||v<0)v=0;if(v>10)v=10;
+    S.f[wk].teams[+tm][+k][f]=v;changed();updateTotals();
+  }else if(t.dataset.emp!==undefined){
+    const i=+t.dataset.emp,old=S.emps[i],nv=t.value.trim();
+    if(nv&&S.emps.some((e,j)=>j!==i&&e.toLowerCase()===nv.toLowerCase())){t.setAttribute("aria-invalid","true");empMsg('"'+nv+'" is already on the list. Each name can be entered once. Add a last initial to tell two people apart.');return}
+    t.removeAttribute("aria-invalid");empMsg("");S.emps[i]=nv;
+    if(old&&old!==nv)for(let w=0;w<NF;w++)for(let tm=0;tm<NT;tm++)for(let k=0;k<NS;k++)if(S.f[w].teams[tm][k].n===old)S.f[w].teams[tm][k].n=nv;
+    changed();
+  }else if(t.dataset.horse!==undefined){S.horses[+t.dataset.horse]=t.value;changed()}
+  else if(t.id==="co"){S.client=t.value;changed()}
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset.emp!==undefined){if(t.getAttribute("aria-invalid")){const m=$("empmsg").textContent;t.value="";t.removeAttribute("aria-invalid");t.dispatchEvent(new Event("input",{bubbles:true}));empMsg(m)}return}
+  if(t.dataset.role){const [tm,k]=t.dataset.role.split(",").map(Number);S.f[wk].teams[tm][k].r=t.value;changed();return}
+  if(t.dataset.sel){const [tm,k]=t.dataset.sel.split(",").map(Number);S.f[wk].teams[tm][k].n=t.value==="__inh"?null:t.value;changed();render()}
+  else if(t.id==="done"){S.f[wk].done=t.value==="yes";changed();render()}
+  else if(t.id==="len"){S.len=+t.value;changed()}
+});
+function empMsg(m){const e=$("empmsg");if(e)e.textContent=m}
+async function exportCsv(){
+  const rows=[["Team","Horse","Furlong","Employee","Incidents","Unexcused absences"]];
+  for(let w=0;w<NF;w++){if(!S.f[w].done)continue;for(let t=0;t<NT;t++)for(let k=0;k<NS;k++){const n=effName(w,t,k),s=S.f[w].teams[t][k];if(n||s.i||s.c)rows.push([t+1,horseName(t),w+1,n,s.i,s.c])}}
+  rows.push([]);rows.push(["Team","Horse","Furlongs won","Place"]);const r=ranks();for(let t=0;t<NT;t++)rows.push([t+1,horseName(t),wins(t),r[t]||""]);
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\n");
+  try{const d=await window.claude.use("downloads");if(!d)throw 0;await d.save({filename:"track-side-results.csv",data:csv})}
+  catch(e){try{await navigator.clipboard.writeText(csv);setStatus("Download unavailable here. Results copied to clipboard.")}catch(x){setStatus("Export is not available in this view.")}}
+}
+S=blankState();boot();
+})();
+</script>
+
+</body></html>
